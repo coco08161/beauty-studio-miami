@@ -311,6 +311,11 @@ section { position: relative; padding: clamp(80px, 10vw, 150px) var(--pad-x); }
 .form-foot small { color: var(--ink-soft); font-size: 13.5px; max-width: 300px; }
 .form-status { margin: 18px 0 0; font-weight: 500; color: var(--flame); min-height: 1em; }
 .honey { position: absolute !important; left: -9999px !important; }
+.form-success { align-self: start; }
+.form-success h3 { font-size: clamp(40px, 4vw, 60px); }
+.form-success h3 em { color: var(--flame); }
+.form-success a { color: var(--flame); }
+[hidden] { display: none !important; }
 
 /* ---------- Visit ---------- */
 .visit { display: grid; grid-template-columns: 1fr 1.2fr; gap: clamp(30px, 5vw, 70px); align-items: stretch; }

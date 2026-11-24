@@ -71,27 +71,61 @@
     });
   });
 
-  /* ---------- Rent form (FormSubmit) ---------- */
+  /* ---------- Rent form (FormSubmit, sent in the background) ----------
+     Safety: no double sends, loading state, 12 s timeout, error fallback
+     that keeps what the visitor typed, honeypot, inline success message.
+     Without JS the form still posts normally and lands on thank-you.html. */
   var form = document.getElementById("suite-form");
   if (form) {
     var next = form.querySelector('input[name="_next"]');
     if (next) next.value = new URL("thank-you.html", window.location.href).href;
     var status = form.querySelector(".form-status");
+    var btn = form.querySelector('button[type="submit"]');
+    var btnLabel = btn.querySelector("span");
+    var success = document.getElementById("suite-success");
+    var sending = false;
+    var fallback = 'Something went wrong sending your request. Please try again, or call <a href="tel:+17865362111">786.536.2111</a>.';
+
+    function done() {
+      form.hidden = true;
+      if (success) { success.hidden = false; success.focus({ preventScroll: true }); success.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" }); }
+    }
+
     form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (sending) return;
       var first = null;
       form.querySelectorAll("[required]").forEach(function (el) {
         var ok = el.value.trim() !== "" && el.checkValidity();
         el.closest(".field").classList.toggle("invalid", !ok);
         if (!ok && !first) first = el;
       });
-      if (first) { e.preventDefault(); first.focus(); status.textContent = "Please fill in the highlighted fields."; return; }
-      if (/YOUR-EMAIL/.test(form.action)) {
-        e.preventDefault();
-        status.textContent = "Online requests open soon. For now, please call 786.536.2111.";
-        return;
-      }
-      var btn = form.querySelector('button[type="submit"]');
-      btn.disabled = true; btn.querySelector("span").textContent = "Sending…";
+      if (first) { first.focus(); status.textContent = "Please fill in the highlighted fields."; return; }
+      if (/YOUR-EMAIL/.test(form.action)) { status.textContent = "Online requests open soon. For now, please call 786.536.2111."; return; }
+      if (form.querySelector('[name="_honey"]').value) { done(); return; } // bots: pretend it worked
+
+      var data = {};
+      new FormData(form).forEach(function (v, k) { if (k !== "_next") data[k] = typeof v === "string" ? v.trim() : v; });
+
+      sending = true; btn.disabled = true; btnLabel.textContent = "Sending…"; status.textContent = "";
+      var ctrl = "AbortController" in window ? new AbortController() : null;
+      var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 12000);
+
+      fetch(form.action.replace("formsubmit.co/", "formsubmit.co/ajax/"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(data),
+        signal: ctrl ? ctrl.signal : undefined
+      }).then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json().catch(function () { return {}; });
+      }).then(function (json) {
+        if (json && (json.success === false || json.success === "false")) throw new Error(json.message || "Not sent");
+        done();
+      }).catch(function () {
+        status.innerHTML = fallback;
+        sending = false; btn.disabled = false; btnLabel.textContent = "Try again";
+      }).then(function () { clearTimeout(timer); });
     });
     form.addEventListener("input", function (e) {
       var f = e.target.closest(".field");

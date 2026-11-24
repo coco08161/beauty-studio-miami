@@ -110,36 +110,36 @@
           <div class="form-grid">
             <div class="field">
               <label for="first">First name <span class="req">*</span></label>
-              <input id="first" name="First name" type="text" autocomplete="given-name" required>
+              <input id="first" name="First name" type="text" maxlength="80" autocomplete="given-name" required>
               <span class="error">Please enter your first name.</span>
             </div>
             <div class="field">
               <label for="last">Last name</label>
-              <input id="last" name="Last name" type="text" autocomplete="family-name">
+              <input id="last" name="Last name" type="text" maxlength="80" autocomplete="family-name">
             </div>
             <div class="field">
               <label for="email">Email <span class="req">*</span></label>
-              <input id="email" name="email" type="email" autocomplete="email" required>
+              <input id="email" name="email" type="email" maxlength="120" autocomplete="email" required>
               <span class="error">Please enter a valid email.</span>
             </div>
             <div class="field">
               <label for="phone">Phone <span class="req">*</span></label>
-              <input id="phone" name="Phone" type="tel" autocomplete="tel" required pattern="[0-9+()\-.\s]{7,}">
+              <input id="phone" name="Phone" type="tel" maxlength="30" autocomplete="tel" required pattern="[0-9+()\-.\s]{7,}">
               <span class="error">Please enter a phone number.</span>
             </div>
             <div class="field full">
               <label for="services">What services do you plan to offer? <span class="req">*</span></label>
-              <textarea id="services" name="Services planned" required></textarea>
+              <textarea id="services" name="Services planned" maxlength="2000" required></textarea>
               <span class="error">Tell us a little about your services.</span>
             </div>
             <div class="field">
               <label for="company">Company name <span class="req">*</span></label>
-              <input id="company" name="Company name" type="text" autocomplete="organization" required>
+              <input id="company" name="Company name" type="text" maxlength="80" autocomplete="organization" required>
               <span class="error">Please enter your company name.</span>
             </div>
             <div class="field">
               <label for="instagram">Instagram <span class="req">*</span></label>
-              <input id="instagram" name="Instagram" type="text" placeholder="@yourhandle" required>
+              <input id="instagram" name="Instagram" type="text" maxlength="60" placeholder="@yourhandle" required>
               <span class="error">Please add your Instagram handle.</span>
             </div>
           </div>
@@ -149,6 +149,11 @@
           </div>
           <p class="form-status" role="status" aria-live="polite"></p>
         </form>
+        <div class="form form-success" id="suite-success" tabindex="-1" hidden>
+          <p class="kicker">Inquiry received</p>
+          <h3>Thank <em>you.</em></h3>
+          <p>We have your details and will reach out soon about available suites. For anything urgent, call <a href="tel:+17865362111">786.536.2111</a>.</p>
+        </div>
       </div>
     </section>
 
